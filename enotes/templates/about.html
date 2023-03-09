@@ -1,0 +1,55 @@
+{% include 'navbar.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+<html>
+<div class="about-section">
+  <h1>About Us</h1>
+  <p>This is a simple <b>Online Note Categorization</b> system where notes by users are automatically classified into different categories. </p>
+  <p>Web application is built by using <b>Django</b> framework, <b>Python</b> language, <b>SQLite</b> database and  <b>Html</b>, <b>CSS</b> and <b>Bootstrap</b> for design.</p>
+  <p>Machine learning model is built by using <b>20newsgroups</b> dataset, <b>sklearn</b> library and <b>Multinomial Naive Bayes</b> algorithm.</p>
+</div>
+
+<h2 style="text-align:center">Our Team</h2>
+<div class="row">
+  <div class="column">
+    <div class="card">
+      <img src="static/images/bijay1.jpg" alt="Bijay" style="width:100%">
+      <div class="container">
+        <h2>Bijay Basnet</h2>
+        <p class="title">Machine Learning</p>
+        <p>"It is what is."</p>
+        <p>bijay@email.com</p>
+        <p><button class="button">Contact</button></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="column">
+    <div class="card">
+      <img src="" alt="Kripesh" style="width:100%">
+      <div class="container">
+        <h2>Kripesh Prasad Bhattarai</h2>
+        <p class="title">Front End</p>
+        <p>"Aesthetics is all that matters." </p>
+        <p>kripesh@email.com</p>
+        <p><button class="button">Contact</button></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="column">
+    <div class="card">
+      <img src="" alt="Ritesh" style="width:100%">
+      <div class="container">
+        <h2>Ritesh Shrestha</h2>
+        <p class="title">Database</p>
+        <p>"Rich Data Poor Knowledge."</p>
+        <p>ritesh@email.com</p>
+        <p><button class="button">Contact</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+</html>
+
+
