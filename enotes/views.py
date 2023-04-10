@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth import authenticate, logout, login
 
+import pickle
+
 
 # Create your views here.
 
@@ -81,6 +83,10 @@ def profile(request):
             error = "yes"
     return render(request, 'profile.html', locals())
 
+
+def viewCategory(request):
+    return render(request, 'viewCategory.html')
+
 def addNotes(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
@@ -89,15 +95,50 @@ def addNotes(request):
 
     error = ""
     if request.method == "POST":
-        title = request.POST['Title']
         content = request.POST['Content']
+        category = request.POST['Category']
 
         try:
-            Notes.objects.create(signup=signup, Title=title, Content=content)
+            Notes.objects.create(signup=signup, Content=content, Category=category)
             error = "no"
         except:
             error = "yes"
     return render(request, 'addNotes.html', locals())
+
+
+def result(request):
+    categories = ['alt.atheism',
+                  'comp.graphics',
+                  'comp.os.ms-windows.misc',
+                  'comp.sys.ibm.pc.hardware',
+                  'comp.sys.mac.hardware',
+                  'comp.windows.x',
+                  'misc.forsale',
+                  'rec.autos',
+                  'rec.motorcycles',
+                  'rec.sport.baseball',
+                  'rec.sport.hockey',
+                  'sci.crypt',
+                  'sci.electronics',
+                  'sci.med',
+                  'sci.space',
+                  'soc.religion.christian',
+                  'talk.politics.guns',
+                  'talk.politics.mideast',
+                  'talk.politics.misc',
+                  'talk.religion.misc']
+    if request.method == 'POST':
+        # load the saved model
+        with open('model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        # get the input data from the form
+        input_data = request.POST['Content']
+        # make a prediction using the loaded model
+        prediction = model.predict([input_data])
+        # render the results on the website
+        return render(request, 'result.html', {'prediction': categories[prediction[0]]})
+    return render(request, 'viewCategory.html')
+
 
 def viewNotes(request):
     if not request.user.is_authenticated:
@@ -112,11 +153,11 @@ def editNotes(request,pid):
         return redirect('user_login')
     notes = Notes.objects.get(id=pid)
     if request.method == "POST":
-        title = request.POST['Title']
         content = request.POST['Content']
+        category = request.POST['Category']
 
-        notes.Title = title
         notes.Content = content
+        notes.Category = category
 
         try:
             notes.save()

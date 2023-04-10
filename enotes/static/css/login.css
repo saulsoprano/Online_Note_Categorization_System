@@ -16,7 +16,7 @@ body{
 
 .img-left{
   width: 45%;
-  background: url('/static/images/register.jpg') center;
+  background: url('/static/images/img.png') center;
   background-size: cover;
 }
 

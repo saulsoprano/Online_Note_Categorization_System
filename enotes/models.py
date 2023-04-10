@@ -17,6 +17,7 @@ class Notes(models.Model):
     signup = models.ForeignKey(Signup, on_delete=models.CASCADE)
     Title = models.CharField(max_length=200, null=True)
     Content = models.CharField(max_length=450, null=True)
+    Category = models.CharField(max_length=50, null=True)
     CreationDate = models.DateTimeField(auto_now_add=True)
     UpdationDate = models.DateField(null=True)
 

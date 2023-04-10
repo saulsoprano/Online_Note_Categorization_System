@@ -24,8 +24,9 @@
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Title</th>
+                      <th scope="col">Category</th>
                     <th scope="col">Upload Date</th>
+                      <th scope="col">Content</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -34,8 +35,9 @@
                   {% for i in notes %}
                   <tr>
                     <td>{{forloop.counter}}</td>
-					<td>{{i.Title}}</td>
+                      <td>{{i.Category}}</td>
 					<td>{{i.CreationDate}}</td>
+                      <td>{{i.Content}}</td>
                     <td><a href="{% url 'editNotes' i.id %}" class="btn btn-primary">Edit</a> |
                     <a href="{% url 'deleteNotes' i.id %}" class="btn btn-danger" onclick="return confirm('Are your sure to Delete ?')">Delete</a></td>
                   </tr>
