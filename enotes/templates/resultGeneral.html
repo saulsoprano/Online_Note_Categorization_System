@@ -1,0 +1,55 @@
+{% extends 'usernavbar.html' %}
+{% block main %}
+
+
+<div class="pagetitle">
+    <h1>Category</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+            <li class="breadcrumb-item active">viewCategory</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<div class="section profile">
+    <div class="row">
+
+        <div class="col-xl-12">
+
+            <div class="card">
+                <div class="card-body pt-3">
+                    <!-- Bordered Tabs -->
+                    <ul class="nav nav-tabs nav-tabs-bordered">
+
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
+                                Category
+                            </button>
+                        </li>
+
+
+                    </ul>
+                    <div class="tab-content pt-2">
+
+                        <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                            <form method="post" >
+                                {% csrf_token %}
+
+                                <div class="text-center text-success p-5">
+                                       <h1 text-align="centre">{{prediction}}</h1>
+                                </div>
+
+                            </form><!-- End Profile Edit Form -->
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>
+{% endblock %}

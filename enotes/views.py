@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth import authenticate, logout, login
@@ -5,14 +6,13 @@ from django.contrib.auth import authenticate, logout, login
 import pickle
 
 
-# Create your views here.
-
 def index(request):
     return render(request, 'index.html')
 
 
 def about(request):
     return render(request, 'about.html')
+
 
 def register(request):
     error = ""
@@ -33,6 +33,7 @@ def register(request):
             error = "yes"
     return render(request, 'register.html', locals())
 
+
 def user_login(request):
     error = ""
     if request.method == 'POST':
@@ -49,13 +50,23 @@ def user_login(request):
             error = "yes"
     return render(request, 'user_login.html', locals())
 
+
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
     user = User.objects.get(id=request.user.id)
     signup = Signup.objects.get(user=user)
+    important = request.GET.get('important', False)
+    totalcategory = Category.objects.filter(signup=signup).count()
     totalnotes = Notes.objects.filter(signup=signup).count()
+
+    if important:
+        notes = Notes.objects.filter(signup=signup, is_important=True)
+    else:
+        notes = Notes.objects.filter(signup=signup)
+
     return render(request, 'dashboard.html', locals())
+
 
 def profile(request):
     if not request.user.is_authenticated:
@@ -84,29 +95,141 @@ def profile(request):
     return render(request, 'profile.html', locals())
 
 
-def viewCategory(request):
-    return render(request, 'viewCategory.html')
-
-def addNotes(request):
+def manageCategory(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
     user = User.objects.get(id=request.user.id)
     signup = Signup.objects.get(user=user)
+    category = Category.objects.filter(signup=signup)
 
-    error = ""
     if request.method == "POST":
-        content = request.POST['Content']
-        category = request.POST['Category']
-
+        categoryName = request.POST['categoryName']
         try:
-            Notes.objects.create(signup=signup, Content=content, Category=category)
+            Category.objects.create(signup=signup, categoryName=categoryName)
             error = "no"
         except:
             error = "yes"
-    return render(request, 'addNotes.html', locals())
+    return render(request, 'manageCategory.html', locals())
 
 
-def result(request):
+def editCategory(request, pid):
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    category = Category.objects.get(id=pid)
+    error = ""
+    if request.method == "POST":
+        categoryName = request.POST['categoryName']
+
+        category.categoryName = categoryName
+
+        try:
+            category.save()
+            error = "no"
+        except:
+            error = "yes"
+    return render(request, 'editCategory.html', locals())
+
+
+def deleteCategory(request, pid):
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    category = Category.objects.get(id=pid)
+    category.delete()
+    return redirect('manageCategory')
+
+
+def manageNotes(request):
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    user = User.objects.get(id=request.user.id)
+    signup = Signup.objects.get(user=user)
+    category = Category.objects.filter(signup=signup)
+
+    notes = Notes.objects.filter(Q(category__in=category))
+
+    if request.method == "POST":
+        cid = request.POST['category']
+        categoryid = Category.objects.get(id=cid)
+        noteDescription = request.POST['noteDescription']
+        is_important = request.POST.get('important', False) == 'on'
+
+        try:
+            Notes.objects.create(signup=signup, category=categoryid, noteDescription=noteDescription,
+                                 is_important=is_important)
+            error = "no"
+        except:
+            error = "yes"
+    return render(request, 'manageNotes.html', locals())
+
+
+def editNotes(request, pid):
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    notes = Notes.objects.get(id=pid)
+    user = User.objects.get(id=request.user.id)
+    signup = Signup.objects.get(user=user)
+    category = Category.objects.filter(signup=signup)
+    is_important = request.POST.get('important') == 'on'
+
+    if request.method == "POST":
+        cid = request.POST['category']
+        categoryid = Category.objects.get(id=cid)
+        noteDescription = request.POST['noteDescription']
+
+        notes.category = categoryid
+        notes.noteDescription = noteDescription
+        notes.is_important = is_important
+        try:
+            notes.save()
+            error = "no"
+        except:
+            error = "yes"
+
+    return render(request, 'editNotes.html', locals())
+
+
+def viewNotes(request, id):
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    notes = Notes.objects.get(id=id)
+    user = User.objects.get(id=request.user.id)
+    signup = Signup.objects.get(user=user)
+    noteshistory = Noteshistory.objects.filter(signup=signup)
+
+    if request.method == "POST":
+        noteDetails = request.POST['noteDetails']
+
+        try:
+            Noteshistory.objects.create(note=notes, signup=signup, noteDetails=noteDetails)
+            error = "no"
+        except:
+            error = "yes"
+    return render(request, 'viewNotes.html', locals())
+
+
+def deleteNotesHistory(request, pid):
+    noteshistory = Noteshistory.objects.get(id=pid)
+    noteshistory.delete()
+    return redirect('manageNotes')
+
+
+def deleteNotes(request, pid):
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    notes = Notes.objects.get(id=pid)
+    notes.delete()
+    return redirect('manageNotes')
+
+
+def generalCategory(request):
+    return render(request, 'generalCategory.html')
+
+
+def specificCategory(request):
+    return render(request, 'specificCategory.html')
+
+
+def resultSpecific(request):
     categories = ['alt.atheism',
                   'comp.graphics',
                   'comp.os.ms-windows.misc',
@@ -127,6 +250,7 @@ def result(request):
                   'talk.politics.mideast',
                   'talk.politics.misc',
                   'talk.religion.misc']
+
     if request.method == 'POST':
         # load the saved model
         with open('model.pkl', 'rb') as f:
@@ -136,42 +260,60 @@ def result(request):
         # make a prediction using the loaded model
         prediction = model.predict([input_data])
         # render the results on the website
-        return render(request, 'result.html', {'prediction': categories[prediction[0]]})
-    return render(request, 'viewCategory.html')
+        return render(request, 'resultSpecific.html', {'prediction': categories[prediction[0]]})
+    return render(request, 'specificCategory.html')
 
 
-def viewNotes(request):
+def resultGeneral(request):
+    categories = ['Religion',
+                  'Technology',
+                  'Technology',
+                  'Technology',
+                  'Technology',
+                  'Technology',
+                  'Miscellaneous',
+                  'Miscellaneous',
+                  'Miscellaneous',
+                  'Sports',
+                  'Sports',
+                  'Science',
+                  'Science',
+                  'Medicine',
+                  'Space',
+                  'Religion',
+                  'Politics',
+                  'Politics',
+                  'Politics',
+                  'Religion']
+
+    if request.method == 'POST':
+        # load the saved model
+        with open('model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        # get the input data from the form
+        input_data = request.POST['Content']
+        # make a prediction using the loaded model
+        prediction = model.predict([input_data])
+        # render the results on the website
+        return render(request, 'resultGeneral.html', {'prediction': categories[prediction[0]]})
+    return render(request, 'generalCategory.html')
+
+
+def searchNotes(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
     user = User.objects.get(id=request.user.id)
     signup = Signup.objects.get(user=user)
-    notes = Notes.objects.filter(signup=signup)
-    return render(request, 'viewNotes.html', locals())
 
-def editNotes(request,pid):
-    if not request.user.is_authenticated:
-        return redirect('user_login')
-    notes = Notes.objects.get(id=pid)
-    if request.method == "POST":
-        content = request.POST['Content']
-        category = request.POST['Category']
+    sd = None
+    if request.method == 'POST':
+        sd = request.POST['search']
+    try:
+        notes = Notes.objects.filter(Q(category__categoryName__icontains=sd))
+    except:
+        notes = ""
+    return render(request, 'searchNotes.html', locals())
 
-        notes.Content = content
-        notes.Category = category
-
-        try:
-            notes.save()
-            error = "no"
-        except:
-            error = "yes"
-    return render(request, 'editNotes.html', locals())
-
-def deleteNotes(request,pid):
-    if not request.user.is_authenticated:
-        return redirect('user_login')
-    notes = Notes.objects.get(id=pid)
-    notes.delete()
-    return redirect('viewNotes')
 
 def changePassword(request):
     if not request.user.is_authenticated:
@@ -192,6 +334,7 @@ def changePassword(request):
         except:
             error = "yes"
     return render(request, 'changePassword.html', locals())
+
 
 def Logout(request):
     logout(request)

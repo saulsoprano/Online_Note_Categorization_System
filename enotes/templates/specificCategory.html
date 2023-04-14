@@ -1,19 +1,18 @@
-
 {% extends 'usernavbar.html' %}
 {% block main %}
 
 
 <div class="pagetitle">
-    <h1>Category</h1>
+    <h1>View Category</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-            <li class="breadcrumb-item active">viewCategory</li>
+            <li class="breadcrumb-item active">Specific Category</li>
         </ol>
     </nav>
 </div><!-- End Page Title -->
 
-<div class="section profile">
+<section class="section profile">
     <div class="row">
 
         <div class="col-xl-12">
@@ -25,22 +24,28 @@
 
                         <li class="nav-item">
                             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
-                                Category
+                                View Category
                             </button>
                         </li>
-
 
                     </ul>
                     <div class="tab-content pt-2">
 
                         <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                            <form method="post" >
+                            <form method="post" action = "{% url 'resultSpecific' %}">
                                 {% csrf_token %}
 
-                                <div class="text-center text-success p-5">
-                                       <h1 text-align="centre">{{prediction}}</h1>
+                                <div class="row mb-3">
+                                    <label class="col-md-4 col-lg-3 col-form-label">Notes Description</label>
+                                    <div class="col-md-8 col-lg-9">
+                                        <textarea name="Content" class="form-control" style="height: 100px" placeholder="Notes Description" required></textarea>
+                                    </div>
                                 </div>
-
+                                <div class="row">
+                                  <div class="col text-center">
+                                    <button type="submit" class="btn btn-primary">View Specific Category</button>
+                                  </div>
+                                </div>
                             </form><!-- End Profile Edit Form -->
 
                         </div>
@@ -52,18 +57,4 @@
     </div>
 </section>
 
-<!--{% if error == "no" %}-->
-<!--<script>-->
-<!--	   alert('New Notes Added Successfully.');-->
-<!--       window.location=('{% url 'addNotes' %}');-->
-<!--</script>-->
-<!--{% endif %}-->
-
-<!--{% if error == "yes" %}-->
-<!--<script>-->
-<!--	    alert('Something went wrong, Try Again');-->
-<!--</script>-->
-<!--{% endif %}-->
-
 {% endblock %}
-</div>

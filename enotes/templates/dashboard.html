@@ -22,6 +22,28 @@
             <div class="col-xxl-6 col-md-6">
               <div class="card info-card sales-card">
                 <div class="card-body">
+                    <a href="{% url 'manageCategory' %}">
+                  <h5 class="card-title">Total Category</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-files"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{totalcategory}}</h6>
+                        </a>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Sales Card -->
+
+          <div class="col-xxl-6 col-md-6">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                    <a href="{% url 'manageNotes' %}">
                   <h5 class="card-title">Total Notes</h5>
 
                   <div class="d-flex align-items-center">
@@ -30,17 +52,60 @@
                     </div>
                     <div class="ps-3">
                       <h6>{{totalnotes}}</h6>
+                        </a>
 
                     </div>
                   </div>
                 </div>
 
               </div>
-            </div><!-- End Sales Card -->
+            </div>
           </div>
         </div>
       </div>
 </section>
+<div class="row">
+    <div class="card radius-15 col-xl-12">
+        <div class="card-body">
+            <div class="card-title">
+                <h4> <a href="{% url 'dashboard' %}?important=True">Important Notes</a></h4>
+            </div>
+            <hr/>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Notes</th>
+                        <th scope="col">Creation Date</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                            {% if note.is_important %}
+                                <tr class="important">
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{ note.category.categoryName }}</td>
+                                    <td>{{ note.noteDescription|truncatechars:100  }}</td>
+                                    <td>{{ note.CreationDate }}</td>
+                                    <td>
+                                        <a href="{% url 'viewNotes' note.id %}" class="btn btn-success">View</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No notes found.</td>
+                            </tr>
+                        {% endfor %}
 
-
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+

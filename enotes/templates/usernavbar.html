@@ -29,6 +29,17 @@
   <!-- Template Main CSS File -->
   <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
 
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('.has-arrow').click(function(e) {
+        e.preventDefault();
+        $(this).toggleClass('active');
+        $(this).next('ul').slideToggle();
+      });
+    });
+  </script>
+
 </head>
 
 <body>
@@ -120,26 +131,47 @@
         </a>
       </li><!-- End Profile Page Nav -->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="/addNotes">
-          <i class="bi bi-question-circle"></i>
-          <span>Add Notes</span>
-        </a>
-      </li><!-- End F.A.Q Page Nav -->
-
-       <li class="nav-item">
-        <a class="nav-link collapsed" href="/viewCategory">
-          <i class="bi bi-binoculars"></i>
-          <span>View Category</span>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="/manageCategory">
+          <i class="bi bi-folder-fill"></i>
+          <span>Manage Category</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/viewNotes">
-          <i class="bi bi-envelope"></i>
-          <span>View Notes</span>
+        <a class="nav-link collapsed" href="/manageNotes">
+          <i class="bi bi-pencil"></i>
+          <span>Manage Notes</span>
         </a>
-      </li><!-- End Contact Page Nav -->
+      </li><!-- End F.A.Q Page Nav -->
+
+       <li class="nav-item ">
+        <a class="nav-link collapsed has-arrow" href="#">
+          <i class="bi bi-binoculars"></i>
+          <span>CATEGORIZE ( USING MNB )</span>
+        </a>
+         <ul style="display: none">
+           <li class = "nav-item">
+             <a class="nav-link collapsed" href="{% url 'generalCategory' %}">
+               <i class="bx bx-right-arrow-alt"></i>
+               <span>General Category</span>
+             </a>
+           </li>
+           <li class = "nav-item">
+             <a class="nav-link collapsed" href="{% url 'specificCategory' %}">
+               <i class="bx bx-right-arrow-alt"></i>
+               <span>Specific Category</span>
+             </a>
+           </li>
+         </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/searchNotes">
+          <i class="bi bi-search"></i>
+          <span>Search Note</span>
+        </a>
+      </li>
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/changePassword">
@@ -147,6 +179,7 @@
           <span>Change Password</span>
         </a>
       </li><!-- End Register Page Nav -->
+
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/logout">
@@ -170,7 +203,8 @@
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">
-      &copy; Copyright <strong><span>Online Note Categorization</span></strong>.
+      <strong><span>Online Note Categorization &copy;
+            <script>document.write(new Date().getFullYear());</script></span></strong>.
     </div>
   </footer><!-- End Footer -->
 

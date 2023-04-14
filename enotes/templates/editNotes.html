@@ -1,78 +1,84 @@
 {% extends 'usernavbar.html' %}
+{% load static %}
 {% block main %}
-
-<div class="pagetitle">
-    <h1>Update Notes</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
-            <li class="breadcrumb-item active">Update Notes</li>
-        </ol>
-    </nav>
-</div><!-- End Page Title -->
-
-<section class="section profile">
-    <div class="row">
-
-        <div class="col-xl-12">
-
-            <div class="card">
-                <div class="card-body pt-3">
-                    <!-- Bordered Tabs -->
-                    <ul class="nav nav-tabs nav-tabs-bordered">
-
-                        <li class="nav-item">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">
-                                Edit Notes
-                            </button>
-                        </li>
-
-                    </ul>
-                    <div class="tab-content pt-2">
-
-                        <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                            <form method="post">
-                                {% csrf_token %}
-
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Notes Description</label>
-                                    <div class="col-md-8 col-lg-9">
-                                        <textarea name="Content" class="form-control" style="height: 100px" required>{{notes.Content}}</textarea>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label class="col-md-4 col-lg-3 col-form-label">Category</label>
-                                    <div class="col-md-8 col-lg-9">
-                                        <input name="Category" type="text" class="form-control" value="{{notes.Category}}">
-                                    </div>
-                                </div>
-
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary">Update</button>
-                                </div>
-
-                            </form><!-- End Profile Edit Form -->
-
-                        </div>
-
-                    </div>
-                    </div>
+<div class="page-wrapper">
+    <!--page-content-wrapper-->
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Notes</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i
+                                    class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit Notes</li>
+                        </ol>
+                    </nav>
                 </div>
             </div>
+            <!--end breadcrumb-->
+
+            <div class="row">
+                <div class="radius-15 col-xl-12 mx-auto">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h4 class="mb-0">Edit Notes</h4>
+                            </div>
+                            <hr>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Category Name</label>
+                                    <select name="category" class="form-control" required>
+                                        <option value="{{notes.category.id}}">{{notes.category.categoryName}}</option>
+                                        {% for i in category %}
+                                        <option value="{{i.id}}">{{i.categoryName}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div >
+                                <div class="mb-3">
+
+                                    <label class="form-label">Notes Description</label>
+                                    <textarea name="noteDescription"
+                                              class="form-control">{{notes.noteDescription}}</textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Is Important???</label>
+                                    <input type="checkbox" name="important">
+                                </div>
+
+
+
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary px-5">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-</section>
+    </div>
+</div>
 
 {% if error == "no" %}
 <script>
-	   alert('Notes has been Updated.');
-       window.location=('{% url 'viewNotes' %}');
+    alert('Notes has been Updated.');
+    window.location=('{% url 'manageNotes' %}');
 </script>
 {% endif %}
 
 {% if error == "yes" %}
 <script>
-	    alert('Something went wrong, Try Again');
+    alert('Something went Wrong. Try Again...');
+
 </script>
 {% endif %}
 
