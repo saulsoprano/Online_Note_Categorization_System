@@ -230,37 +230,23 @@ def specificCategory(request):
 
 
 def resultSpecific(request):
-    categories = ['alt.atheism',
-                  'comp.graphics',
-                  'comp.os.ms-windows.misc',
-                  'comp.sys.ibm.pc.hardware',
-                  'comp.sys.mac.hardware',
-                  'comp.windows.x',
-                  'misc.forsale',
-                  'rec.autos',
-                  'rec.motorcycles',
-                  'rec.sport.baseball',
-                  'rec.sport.hockey',
-                  'sci.crypt',
-                  'sci.electronics',
-                  'sci.med',
-                  'sci.space',
-                  'soc.religion.christian',
-                  'talk.politics.guns',
-                  'talk.politics.mideast',
-                  'talk.politics.misc',
-                  'talk.religion.misc']
-
     if request.method == 'POST':
-        # load the saved model
-        with open('model.pkl', 'rb') as f:
-            model = pickle.load(f)
+        # load the saved model and categories
+        with open('model_final.pkl', 'rb') as f:
+            saved_data = pickle.load(f)
+        model = saved_data['model']
+        categories = saved_data['categories']
+
         # get the input data from the form
         input_data = request.POST['Content']
+
         # make a prediction using the loaded model
         prediction = model.predict([input_data])
+
         # render the results on the website
-        return render(request, 'resultSpecific.html', {'prediction': categories[prediction[0]]})
+        predicted_category = categories[prediction[0]]
+        return render(request, 'resultSpecific.html', {'prediction': predicted_category})
+
     return render(request, 'specificCategory.html')
 
 
