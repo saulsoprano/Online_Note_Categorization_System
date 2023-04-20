@@ -29,9 +29,11 @@ class Notes(models.Model):
         CreationDate = models.DateTimeField(auto_now_add=True)
         UpdationDate = models.DateField(null=True)
         is_important = models.BooleanField(default=False)
+        tags = models.CharField(max_length=250, null=True)
 
         def __str__(self):
             return self.noteDescription
+
 
 class Noteshistory(models.Model):
     note = models.ForeignKey(Notes, on_delete=models.CASCADE, null=True)

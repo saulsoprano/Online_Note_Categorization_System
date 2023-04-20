@@ -1,5 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect
+from django.utils.text import slugify
+
 from .models import *
 from django.contrib.auth import authenticate, logout, login
 
@@ -145,7 +147,7 @@ def manageNotes(request):
     signup = Signup.objects.get(user=user)
     category = Category.objects.filter(signup=signup)
 
-    notes = Notes.objects.filter(Q(category__in=category))
+    notes = Notes.objects.filter(Q(category__in=category)).order_by('-CreationDate')
 
     if request.method == "POST":
         cid = request.POST['category']
@@ -153,9 +155,21 @@ def manageNotes(request):
         noteDescription = request.POST['noteDescription']
         is_important = request.POST.get('important', False) == 'on'
 
+        with open('model_final.pkl', 'rb') as f:
+            saved_data = pickle.load(f)
+        model = saved_data['model']
+        categories = saved_data['categories']
+        prediction = model.predict([noteDescription])
+        predicted_category = categories[prediction[0]]
+        separated_words = predicted_category.split('.')
+        formatted_category = ' '.join(['#' + word for word in separated_words])
+        tag = formatted_category.replace(' #', '  #', 1)
+        # slug = slugify(predicted_category)[:50]  # generate a slug from the predicted tag
+        # tag = '#' + predicted_category
+
         try:
             Notes.objects.create(signup=signup, category=categoryid, noteDescription=noteDescription,
-                                 is_important=is_important)
+                                 is_important=is_important, tags=tag)
             error = "no"
         except:
             error = "yes"
