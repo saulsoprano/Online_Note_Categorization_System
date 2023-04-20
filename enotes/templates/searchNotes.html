@@ -40,6 +40,7 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Category</th>
+                                    <th scope="col">Tags</th>
                                     <th scope="col">Notes</th>
                                     <th scope="col">Creation Date</th>
                                     <th scope="col">Action</th>
@@ -51,7 +52,12 @@
                                 <tr>
                                     <th scope="row">{{forloop.counter}}</th>
                                     <td>{{i.category.categoryName}}</td>
-                                    <td>{{ i.noteDescription }}</td>
+                                    <td>
+                                        {% for tag in i.tags.split %}
+                                        <span class="badge bg-secondary">{{ tag }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ i.noteDescription|truncatechars:70  }}</td>
                                     <td>{{i.CreationDate}}</td>
                                     <td><a href="{% url 'viewNotes' i.id %}" class="btn btn-success">View</a></td>
                                 </tr>

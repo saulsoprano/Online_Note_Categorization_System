@@ -68,7 +68,7 @@
     <div class="card radius-15 col-xl-12">
         <div class="card-body">
             <div class="card-title">
-                <h4> <a href="{% url 'dashboard' %}?important=True">Important Notes</a></h4>
+                <h4>Important Notes</h4>
             </div>
             <hr/>
             <div class="table-responsive">
@@ -77,29 +77,36 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Category</th>
+                        <th scope="col">Tags</th>
                         <th scope="col">Notes</th>
                         <th scope="col">Creation Date</th>
                         <th scope="col">Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                        {% for note in notes %}
-                            {% if note.is_important %}
-                                <tr class="important">
-                                    <th scope="row">{{ forloop.counter }}</th>
-                                    <td>{{ note.category.categoryName }}</td>
-                                    <td>{{ note.noteDescription|truncatechars:100  }}</td>
-                                    <td>{{ note.CreationDate }}</td>
-                                    <td>
-                                        <a href="{% url 'viewNotes' note.id %}" class="btn btn-success">View</a>
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center">No notes found.</td>
-                            </tr>
-                        {% endfor %}
+                        {% for note in notes|dictsort:"CreationDate" %}
+    {% if note.is_important %}
+        <tr class="important">
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ note.category.categoryName }}</td>
+            <td>
+                {% for tag in note.tags.split %}
+                    <span class="badge bg-secondary">{{ tag }}</span>
+                {% endfor %}
+            </td>
+            <td>{{ note.noteDescription|truncatechars:70 }}</td>
+            <td>{{ note.CreationDate }}</td>
+            <td>
+                <a href="{% url 'viewNotes' note.id %}" class="btn btn-success">View</a>
+            </td>
+        </tr>
+    {% endif %}
+{% empty %}
+    <tr>
+        <td colspan="4" class="text-center">No important notes found.</td>
+    </tr>
+{% endfor %}
+
 
                     </tbody>
                 </table>

@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect
+
 from .models import *
 from django.contrib.auth import authenticate, logout, login
 
@@ -145,7 +146,7 @@ def manageNotes(request):
     signup = Signup.objects.get(user=user)
     category = Category.objects.filter(signup=signup)
 
-    notes = Notes.objects.filter(Q(category__in=category))
+    notes = Notes.objects.filter(Q(category__in=category)).order_by('-CreationDate')
 
     if request.method == "POST":
         cid = request.POST['category']
@@ -153,9 +154,19 @@ def manageNotes(request):
         noteDescription = request.POST['noteDescription']
         is_important = request.POST.get('important', False) == 'on'
 
+        with open('model_final.pkl', 'rb') as f:
+            saved_data = pickle.load(f)
+        model = saved_data['model']
+        categories = saved_data['categories']
+        prediction = model.predict([noteDescription])
+        predicted_category = categories[prediction[0]]
+        separated_words = predicted_category.split('.')
+        formatted_category = ' '.join(['#' + word for word in separated_words])
+        tag = formatted_category.replace(' #', '  #', 1)
+
         try:
             Notes.objects.create(signup=signup, category=categoryid, noteDescription=noteDescription,
-                                 is_important=is_important)
+                                 is_important=is_important, tags=tag)
             error = "no"
         except:
             error = "yes"
@@ -288,17 +299,21 @@ def resultGeneral(request):
 def searchNotes(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
+
     user = User.objects.get(id=request.user.id)
     signup = Signup.objects.get(user=user)
 
-    sd = None
+    search_query = None
     if request.method == 'POST':
-        sd = request.POST['search']
-    try:
-        notes = Notes.objects.filter(Q(category__categoryName__icontains=sd))
-    except:
-        notes = ""
-    return render(request, 'searchNotes.html', locals())
+        search_query = request.POST.get('search', None)
+
+    notes = None
+
+    if search_query is not None:
+        notes = Notes.objects.filter(
+            Q(category__categoryName__icontains=search_query) | Q(tags__icontains=search_query), signup=signup)
+
+    return render(request, 'searchNotes.html', {'notes': notes, 'search_query': search_query})
 
 
 def changePassword(request):
