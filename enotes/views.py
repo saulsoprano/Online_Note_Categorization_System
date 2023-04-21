@@ -1,6 +1,5 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect
-
 from .models import *
 from django.contrib.auth import authenticate, logout, login
 
@@ -163,6 +162,8 @@ def manageNotes(request):
         separated_words = predicted_category.split('.')
         formatted_category = ' '.join(['#' + word for word in separated_words])
         tag = formatted_category.replace(' #', '  #', 1)
+        # slug = slugify(predicted_category)[:50]  # generate a slug from the predicted tag
+        # tag = '#' + predicted_category
 
         try:
             Notes.objects.create(signup=signup, category=categoryid, noteDescription=noteDescription,
@@ -171,6 +172,7 @@ def manageNotes(request):
         except:
             error = "yes"
     return render(request, 'manageNotes.html', locals())
+
 
 
 def editNotes(request, pid):
@@ -299,21 +301,17 @@ def resultGeneral(request):
 def searchNotes(request):
     if not request.user.is_authenticated:
         return redirect('user_login')
-
     user = User.objects.get(id=request.user.id)
     signup = Signup.objects.get(user=user)
 
-    search_query = None
+    sd = None
     if request.method == 'POST':
-        search_query = request.POST.get('search', None)
-
-    notes = None
-
-    if search_query is not None:
-        notes = Notes.objects.filter(
-            Q(category__categoryName__icontains=search_query) | Q(tags__icontains=search_query), signup=signup)
-
-    return render(request, 'searchNotes.html', {'notes': notes, 'search_query': search_query})
+        sd = request.POST['search']
+    try:
+        notes = Notes.objects.filter(Q(category__categoryName__icontains=sd))
+    except:
+        notes = ""
+    return render(request, 'searchNotes.html', locals())
 
 
 def changePassword(request):
